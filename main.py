@@ -32,28 +32,17 @@ def main():
                 raise ValueError()
             ordering = sys.argv[8] == "iu"
             
-            if partitioned_scheduling(taskset, num_cores, heuristic, ordering):
-                sys.exit(0)
-            else:
-                # exit code 2
-                print("Not schedulable with simulation.")
-                sys.exit(2)
+            partitioned_scheduling(taskset, num_cores, heuristic, ordering)
+            sys.exit(0)
             
         case "global":
-            if global_scheduling(taskset, num_cores):
-                sys.exit(0)
-            else:
-                # exit code 2
-                print("Not schedulable with simulation.")
-                sys.exit(2)
+            global_scheduling(taskset, num_cores)
+            sys.exit(0)
         case _:
             k = int(scheduler)
             if k in range(len(taskset.get_tasks())):
-                if edf_k(taskset, num_cores, k):
-                    sys.exit(0)
-                else:
-                    # exit code 2
-                    print("Not schedulable with simulation.")
-                    sys.exit(2) 
+                edf_k(taskset, num_cores, k)
+                sys.exit(0)
+
     
 main()

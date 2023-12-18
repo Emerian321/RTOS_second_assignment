@@ -16,10 +16,6 @@ class TaskSet:
                 jobs.append(task.spawn_job(t))
         return jobs
     
-    def next_release(self, t):
-        res = [t % self.tasks[i].period for i in range(len(self.tasks)) if t % self.tasks[i].period > 0]
-        return min(res) if res else 1
-    
     def get_tasks(self)-> list[Task]:
         return self.tasks 
 
@@ -27,5 +23,5 @@ class TaskSet:
         return len(self.tasks)
     
     def sort(self, increasing_utilization):
-        self.tasks.sort(key=lambda x:x.get_utilization(), reverse=increasing_utilization)
+        self.tasks.sort(key=lambda x:x.get_utilization(), reverse=not increasing_utilization)
         
