@@ -3,23 +3,20 @@ from taskset import TaskSet
 from job import Job
 from priority_alg import earliest_deadline_first
 from heuristics import Heuristic, k_priority, edf_priority
+from feasibility import feasibility_interval
 
 def partitioned_scheduling(taskset: TaskSet, num_cores: int, heuristic: Heuristic, increased_utilisation: bool) -> bool:
     is_schedulable: bool = True
     taskset.sort(increased_utilisation)
     cores = heuristic(taskset.get_tasks(), num_cores)
+    
     for core in cores:
         core.create_task_set()
-        
-    # begin simulation
-    for t in range(feasibility_interval(taskset)):
-        print("time ", t, " :")
-        for core in cores:
-            if not core.schedule(t):
-                return not is_schedulable
+        core.schedule()   
+
     return is_schedulable
 
-def golbal_scheduling(taskset: TaskSet, num_cores: int) -> bool:  
+def global_scheduling(taskset: TaskSet, num_cores: int) -> bool:  
     is_schedulable: bool = True
     queue: list[Job] = []
     # Begin simulation
@@ -41,7 +38,7 @@ def golbal_scheduling(taskset: TaskSet, num_cores: int) -> bool:
                 queue.remove(elected_jobs[core])
         # check completed jobs
         for job in elected_jobs:
-            if not job.is_complete():
+            if job and not job.is_complete():
                 queue.append(job)
     return is_schedulable
 
@@ -64,17 +61,6 @@ def edf_k(taskset: TaskSet, num_cores: int, k: int):
             core += 1
     for core in cores:
         core.create_task_set()
+        core.schedule()
         
-    # begin simulation
-    for t in range(feasibility_interval(taskset)):
-        for core in cores:
-            if not core.schedule(t):
-                return not is_schedulable
     return is_schedulable
-
-def feasibility_interval(taskset: TaskSet) -> int:
-    last_deadline = 0
-    for task in taskset.get_tasks():
-        if last_deadline < task.deadline:
-            last_deadline = task.deadline
-    return last_deadline

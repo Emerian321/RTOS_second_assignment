@@ -16,9 +16,9 @@ def first_fit(task_list: list[Task], num_cores: int) -> list[Core]:
         unfit = True
         while unfit:
             if selected_core >= num_cores:
-                # error exit 3
-                print("Not schedulable without simulation")
-                sys.exit(3)
+                # error exit 2
+                print("First fit packing impossible")
+                sys.exit(2)
             unfit = cores[selected_core].is_unfit(task)
             if not unfit:
                 cores[selected_core].add_task(task)
@@ -27,7 +27,7 @@ def first_fit(task_list: list[Task], num_cores: int) -> list[Core]:
     return cores
 
 def next_fit(task_list: list[Task], num_cores: int):
-    cores = create_multiprocessor(num_cores)   
+    cores = list(create_multiprocessor(num_cores))   
     
     selected_core = 0
     for task in task_list:
@@ -36,9 +36,9 @@ def next_fit(task_list: list[Task], num_cores: int):
         loopback = 0
         while unfit:
             if loopback >= num_cores:
-                # error exit 3
-                print("Not schedulable without simulation")
-                sys.exit(3)
+                # error exit 2
+                print("Next fit packing impossible")
+                sys.exit(2)
             unfit = cores[selected_core].is_unfit(task)
             if not unfit:
                 cores[selected_core].add_task(task)
@@ -49,39 +49,39 @@ def next_fit(task_list: list[Task], num_cores: int):
     return cores
 
 def best_fit(task_list: list[Task], num_cores: int):
-    cores = create_multiprocessor(num_cores)
+    cores = list(create_multiprocessor(num_cores))
     
     for task in task_list:
         
         best_selection = None
         best_score = float('inf')
         for core in range(len(cores)):
-            if not cores[core].is_unfit(task) and cores[core].get_free_space < best_score:
-                best_score = core.get_free_space
+            if not cores[core].is_unfit(task) and cores[core].get_free_space() < best_score:
+                best_score = cores[core].get_free_space()
                 best_selection = core
         if best_selection == None:
-            # error exit 3
-            print("Not schedulable without simulation")
-            sys.exit(3)
+                # error exit 2
+                print("Best fit packing impossible")
+                sys.exit(2)
         cores[best_selection].add_task(task)
             
     return cores
 
 def worst_fit(task_list: list[Task], num_cores: int):
-    cores = create_multiprocessor(num_cores)
+    cores = list(create_multiprocessor(num_cores))
     
     for task in task_list:
         
         best_selection = None
         best_score = -float('inf')
         for core in range(len(cores)):
-            if not cores[core].is_unfit(task) and cores[core].get_free_space > best_score:
-                best_score = core.get_free_space
+            if not cores[core].is_unfit(task) and cores[core].get_free_space() > best_score:
+                best_score = cores[core].get_free_space()
                 best_selection = core
         if best_selection == None:
-            # error exit 3
-            print("Not schedulable without simulation")
-            sys.exit(3)
+            # error exit 2
+            print("Worst fit packing impossible")
+            sys.exit(2)
         cores[best_selection].add_task(task)
     return cores
 

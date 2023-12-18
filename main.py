@@ -40,7 +40,7 @@ def main():
                 sys.exit(2)
             
         case "global":
-            if partitioned_scheduling(taskset, num_cores):
+            if global_scheduling(taskset, num_cores):
                 sys.exit(0)
             else:
                 # exit code 2
@@ -48,7 +48,7 @@ def main():
                 sys.exit(2)
         case _:
             k = int(scheduler)
-            if k in range(len(taskset)):
+            if k in range(len(taskset.get_tasks())):
                 if edf_k(taskset, num_cores, k):
                     sys.exit(0)
                 else:

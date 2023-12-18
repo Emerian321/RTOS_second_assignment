@@ -2,10 +2,11 @@ from taskset import TaskSet
 from job import Job
 from task import Task
 from priority_alg import earliest_deadline_first
+from feasibility import feasibility_interval
 
 class Core:
 
-    task_set = []
+    task_set = None
     queue = []
     free_utilization = 1
     
@@ -32,20 +33,21 @@ class Core:
     def get_free_space(self):
         return self.free_utilization
         
-    def schedule(self, time: int):
-        # Release new jobs
-        self.queue += self.task_set.release_jobs(time)
-        print(self.queue)
-        # Check for deadlines
-        for job in self.queue:
-            if job.deadline_missed(time):
-                print(f"Deadline missed for {job} at time {time} !")
-                return False
-            # Schedule job
-            elected_job = earliest_deadline_first(self.queue)
-            if elected_job is not None:
-                elected_job.schedule(1)
-            # check completed jobs
-            if elected_job.is_complete():
-                self.queue.remove(elected_job)
+    def schedule(self):
+        for time in range(feasibility_interval(self.task_set)):
+            
+            # Release new jobs
+            self.queue += self.task_set.release_jobs(time)
+            # Check for deadlines
+            for job in self.queue:
+                if job.deadline_missed(time):
+                    print(f"Deadline missed for {job} at time {time} !")
+                    exit(2)
+                # Schedule job
+                elected_job = earliest_deadline_first(self.queue)
+                if elected_job is not None:
+                    elected_job.schedule(1)
+                    # check completed jobs
+                    if elected_job.is_complete():
+                        self.queue.remove(elected_job)
         return True
